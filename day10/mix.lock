@@ -1,0 +1,4 @@
+%{
+  "earmark": {:hex, :earmark, "1.4.3", "364ca2e9710f6bff494117dbbd53880d84bebb692dafc3a78eb50aa3183f2bfd", [:mix], [], "hexpm"},
+  "rational": {:hex, :rational, "0.2.0", "b2adc8655018ab6ba4fd46a1171f384dac80e2d7645ac5f246cdc5a9fd4110cb", [:mix], [{:earmark, ">= 0.0.0", [hex: :earmark, repo: "hexpm", optional: false]}], "hexpm"},
+}
