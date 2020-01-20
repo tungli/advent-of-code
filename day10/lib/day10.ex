@@ -5,8 +5,41 @@ defmodule Day10 do
   n = (y2 x1 - y1 x2)/(x1 - x2)
   """
 
-  alias Rational
   alias :math, as: Math
+
+
+  def part_two(input) do
+    chart = parse(input)
+    {best_position = {x_best, y_best}, _c} = part_one_where(input)
+    visible = seen(chart, best_position)
+
+    Enum.sort_by(visible, fn {x, y} -> Math.atan2(x, y) end)
+    |> Enum.reverse()
+    |> Enum.map(fn {x,y} -> {x + x_best, y + y_best} end)
+    |> Enum.at(199)
+  end
+
+
+  @doc """
+  iex> chart = Day10.parse(
+  ...>\"""
+  ...>.#..#
+  ...>.....
+  ...>#####
+  ...>....#
+  ...>...##
+  ...>\""")
+  iex> MapSet.new(Day10.seen(chart, {0, 0}))
+  MapSet.new([{1, 0}, {0, 2}, {1, 2}, {2, 2}, {3, 2}, {4, 2}, {4, 3}, {3, 4}])
+  """
+  def seen(chart, _from = {x0, y0}) do
+    shifted = asteroid_positions(chart)
+    |> Enum.map(fn {i, j} -> {i - x0, j - y0} end)
+
+    (shifted -- [{0,0}])
+    |> Enum.sort_by(fn {i, j} -> i*i + j*j end)
+    |> Enum.uniq_by(fn {i, j} -> Math.atan2(j, i) end)
+  end
 
   def part_one(input) do
     chart = parse(input)
@@ -48,23 +81,6 @@ defmodule Day10 do
   def n_seen(chart, from) do
     length(seen(chart, from))
   end
-
-  def seen(chart, _from = {x0, y0}) do
-    positions = asteroid_positions(chart) 
-                |> Enum.map(fn {x, y} -> {x - x0, y - y0} end)
-
-    seen(Enum.filter(positions, fn {_x, y} -> y > 0 end)) ++ # count lower plane
-    seen(Enum.filter(positions, fn {_x, y} -> y < 0 end)) ++ # count upper plane
-    seen(Enum.filter(positions, fn {x, y} -> y == 0 && x > 0 end)) ++ # count zero-right
-    seen(Enum.filter(positions, fn {x, y} -> y == 0 && x < 0 end))   # count zero-left
-  end
-
-  defp seen(positions) do
-    positions 
-    |> Enum.map(fn {x, y} -> Rational.simplify(%Rational{num: y, den: x}) end)
-    |> Enum.uniq()
-  end
-
 
   @doc """
   iex> Day10.parse(
